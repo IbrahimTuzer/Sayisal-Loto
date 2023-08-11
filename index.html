@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sayısal Loto Oyunu</title>
+</head>
+<body>
+  <h1>Sayısal Loto Oyunu</h1>
+  <p>Tahminlerinizi girin (1 ile 49 arasında):</p>
+  <input type="number" id="number1" min="1" max="49">
+  <input type="number" id="number2" min="1" max="49">
+  <input type="number" id="number3" min="1" max="49">
+  <input type="number" id="number4" min="1" max="49">
+  <input type="number" id="number5" min="1" max="49">
+  <input type="number" id="number6" min="1" max="49">
+  <button onclick="generateNumbers()" id="guessButton">Tahmin Gir</button>
+  <button onclick="drawLottery()" id="drawButton" disabled>Kura Çek</button>
+  <h2>Kazanan Sayılar:</h2>
+  <p id="winningNumbers"></p>
+  <p id="matchedNumbers"></p> <!-- Yeni eklenen etiket -->
+  <p id="numMatches"></p> <!-- Yeni eklenen etiket -->
+
+  <script>
+    var enteredNumbers = [];
+
+    function generateNumbers() {
+      var numbers = [];
+      for (var i = 1; i <= 6; i++) {
+        var input = document.getElementById('number' + i);
+        var value = parseInt(input.value);
+        
+        if (value < 1 || value > 49) {
+          alert('1-49 arasında bir sayı girmelisiniz.');
+          return;
+        }
+        
+        if (enteredNumbers.includes(value)) {
+          alert('Aynı tahmin bir kez girilebilir.');
+          return;
+        }
+        
+        numbers.push(value);
+        enteredNumbers.push(value);
+      }
+
+      // Benzersiz sayıları küçükten büyüğe sırala
+      numbers.sort(function(a, b) {
+        return a - b;
+      });
+
+      // Sayıları tahmin kutularına yerleştir
+      for (var i = 0; i < numbers.length; i++) {
+        document.getElementById('number' + (i + 1)).value = numbers[i];
+      }
+
+      // Butonları güncelle
+      document.getElementById('guessButton').disabled = true;
+      document.getElementById('drawButton').disabled = false;
+    }
+
+    function drawLottery() {
+      var winningNumbers = generateRandomNumbers();
+
+      // Sayıları küçükten büyüğe sırala
+      winningNumbers.sort(function(a, b) {
+        return a - b;
+      });
+
+      document.getElementById('winningNumbers').textContent = winningNumbers.join(', ');
+
+      // Bilinen sayıları göster
+      var guessedNumbers = [];
+      var numMatches = 0;
+      for (var i = 1; i <= 6; i++) {
+        var input = document.getElementById('number' + i);
+        var value = parseInt(input.value);
+        if (winningNumbers.includes(value)) {
+          guessedNumbers.push(value);
+          numMatches++;
+        }
+      }
+      document.getElementById('matchedNumbers').textContent = 'Bilinen Sayılar: ' + guessedNumbers.join(', ');
+      document.getElementById('numMatches').textContent = 'Bilinen Sayı Adedi: ' + numMatches;
+
+      // Butonları güncelle
+      document.getElementById('guessButton').disabled = false;
+      document.getElementById('drawButton').disabled = true;
+
+      // Reset entered numbers
+      enteredNumbers = [];
+    }
+
+    function generateRandomNumbers() {
+      var randomNumbers = [];
+      while (randomNumbers.length < 6) {
+        var randomNumber = Math.floor(Math.random() * 49) + 1;
+        if (!randomNumbers.includes(randomNumber)) {
+          randomNumbers.push(randomNumber);
+        }
+      }
+      return randomNumbers;
+    }
+  </script>
+</body>
+</html>
